@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.1.0-spec] - 2025-12-10
+
+### 新增
+- **小游戏集合平台规格设计**：完成功能规格和实施计划
+  - `specs/001-mini-game-collection/spec.md` - 功能规格文档
+  - `specs/001-mini-game-collection/plan.md` - 实施计划
+  - `specs/001-mini-game-collection/research.md` - 技术研究
+  - `specs/001-mini-game-collection/data-model.md` - 数据模型设计
+  - `specs/001-mini-game-collection/quickstart.md` - 快速开始指南
+  - `specs/001-mini-game-collection/tasks.md` - 任务列表（59个任务）
+  - `CODEBUDDY.md` - AI 助手上下文配置
+
+### 规划内容
+- 主菜单导航系统 (P1)
+- 消消乐游戏重构 (P1)
+- 五子棋游戏 (P2)
+- 游戏进度保存 (P3)
+
+---
+
 ## [1.0.2] - 2025-12-10
 
 ### 新增
