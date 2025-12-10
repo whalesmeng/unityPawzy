@@ -3,7 +3,7 @@
 ## [1.2.0] - 2025-12-10
 
 ### 新增
-- **小游戏集合平台基础架构**：实现 Phase 1-4 的核心功能
+- **小游戏集合平台基础架构**：实现 Phase 1-5 的核心功能
   
 #### Phase 1: 项目结构
 - 创建游戏模块目录结构：`Assets/Scripts/Games/Common/`, `Match3/`, `Gomoku/`
@@ -32,11 +32,18 @@
 - `GameUI.cs` - 更新支持新旧两套游戏管理器，新增返回主菜单按钮
 - `MatchProcessor.cs` - 更新支持 Match3Game，兼容旧 GameManager
 
+#### Phase 5: 五子棋游戏 (US3)
+- `GomokuGame.cs` - 五子棋游戏控制器，实现 IGame 接口
+- `GomokuBoard.cs` - 五子棋棋盘，支持 15x15 网格、落子、胜负判定
+- `GomokuAI.cs` - 五子棋 AI，使用 Minimax + Alpha-Beta 剪枝算法
+- `GomokuUI.cs` - 五子棋游戏UI，显示回合、胜负结果
+
 ### 技术说明
 - 使用 ScriptableObject 管理游戏配置
 - 支持异步场景加载，最小加载时间 0.5s
 - 多游戏高分独立保存，支持游玩次数和胜利次数统计
 - 保持向后兼容：GameUI 和 MatchProcessor 同时支持新旧系统
+- 五子棋 AI：Minimax + Alpha-Beta 剪枝，支持 3 级难度
 
 ---
 
