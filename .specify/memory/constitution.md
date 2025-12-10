@@ -1,20 +1,22 @@
 <!--
   Sync Impact Report
   ==================
-  Version change: 0.0.0 → 1.0.0 (Initial constitution)
+  Version change: 1.0.0 → 1.1.0 (MINOR - added principles and workflow updates)
   
-  Modified principles: N/A (initial creation)
+  Modified principles:
+  - IV. 代码质量 → 强化日志规范，新增调试日志要求
   
   Added sections:
-  - Core Principles (5 principles)
-  - Development Workflow
-  - Quality Standards
-  - Governance
+  - VI. 调试日志规范 (新增原则)
   
   Removed sections: N/A
   
+  Workflow changes:
+  - 开发流程简化为主分支开发（单人开发模式）
+  - 移除 PR/代码审查相关要求
+  
   Templates requiring updates:
-  - .specify/templates/plan-template.md ✅ (no changes needed - Constitution Check section compatible)
+  - .specify/templates/plan-template.md ✅ (no changes needed)
   - .specify/templates/spec-template.md ✅ (no changes needed)
   - .specify/templates/tasks-template.md ✅ (no changes needed)
   
@@ -69,7 +71,7 @@
 项目结构 MUST 遵循 Unity 最佳实践。
 
 **目录规范**:
-- `Assets/Scripts/` - 按功能模块划分子目录 (Core, UI, Data, Effects, Audio)
+- `Assets/Scripts/` - 按功能模块划分子目录 (Core, UI, Data, Effects, Audio, Games)
 - `Assets/Prefabs/` - 预制体文件
 - `Assets/Resources/` - 运行时加载资源
 - `Assets/Scenes/` - 场景文件
@@ -77,7 +79,7 @@
 
 **命名空间**:
 - 所有脚本 MUST 使用 `PawzyPop` 命名空间
-- 子模块使用对应子命名空间 (PawzyPop.Core, PawzyPop.UI 等)
+- 子模块使用对应子命名空间 (PawzyPop.Core, PawzyPop.UI, PawzyPop.Games 等)
 
 ### IV. 代码质量
 
@@ -98,7 +100,42 @@
 - 输入处理 MUST 同时支持鼠标和触摸
 - 相机设置 MUST 使用自适应缩放
 
+### VI. 调试日志规范 (NON-NEGOTIABLE)
+
+开发过程中 MUST 补充充足的日志，用于帮助分析和定位 Bug。
+
+**规则**:
+- 每个类的关键方法入口 MUST 添加日志，格式：`Debug.Log($"[类名] 方法名: 参数信息")`
+- 状态变化 MUST 记录日志，包括：游戏状态、分数变化、场景切换等
+- 异常和错误 MUST 使用 `Debug.LogError()` 或 `Debug.LogWarning()` 记录
+- 条件分支的关键路径 SHOULD 添加日志，便于追踪执行流程
+- 日志内容 MUST 包含足够的上下文信息（变量值、状态等）
+
+**日志格式示例**:
+```csharp
+// 方法入口
+Debug.Log($"[Board] InitializeBoard: width={width}, height={height}");
+
+// 状态变化
+Debug.Log($"[GameManager] 状态变更: {oldState} -> {newState}");
+
+// 错误日志
+Debug.LogError($"[MatchFinder] FindMatches failed: board is null");
+
+// 警告日志
+Debug.LogWarning($"[SaveManager] 保存失败，使用默认值: {defaultValue}");
+```
+
+**日志级别**:
+- `Debug.Log()`: 常规信息，用于追踪流程
+- `Debug.LogWarning()`: 警告信息，非致命但需关注
+- `Debug.LogError()`: 错误信息，需要修复的问题
+
 ## Development Workflow
+
+### 开发模式
+
+**单人开发模式**：直接在 `main` 分支开发，无需创建功能分支。
 
 ### 提交流程
 
@@ -107,15 +144,15 @@
 3. 运行 Unity 编译检查
 4. `git add -A`
 5. `git commit -m "<type>: <subject>"`
-6. `git push`
+6. `git push origin main`
 
 ### 版本发布流程
 
 1. 更新 CHANGELOG 中的版本号
 2. 更新 ProjectSettings 中的版本信息
 3. 构建目标平台包
-4. 创建 Git tag
-5. 推送到远程仓库
+4. 创建 Git tag: `git tag -a vX.Y.Z -m "版本描述"`
+5. 推送到远程仓库: `git push origin main --tags`
 
 ## Quality Standards
 
@@ -131,12 +168,16 @@
 - 架构变更 MUST 更新 `doc/技术方案.md`
 - 所有变更 MUST 记录在 `doc/CHANGELOG.md`
 
+### 日志检查
+
+- 新增功能 MUST 包含充足的调试日志
+- Bug 修复 MUST 在相关代码添加日志，便于后续追踪
+
 ## Governance
 
 - Constitution 优先于所有其他实践
-- 修改 Constitution 需要文档记录和审批
-- 所有 PR/代码审查 MUST 验证是否符合 Constitution
-- 违反 Constitution 的代码 MUST NOT 合并
+- 修改 Constitution 需要文档记录
+- 违反 Constitution 的代码 MUST NOT 提交
 
 **Amendment Process**:
 1. 提出修改建议
@@ -144,4 +185,4 @@
 3. 更新 Constitution 版本号
 4. 同步更新相关模板和文档
 
-**Version**: 1.0.0 | **Ratified**: 2025-12-10 | **Last Amended**: 2025-12-10
+**Version**: 1.1.0 | **Ratified**: 2025-12-10 | **Last Amended**: 2025-12-10
