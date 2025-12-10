@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using PawzyPop.Games.Match3;
 
 namespace PawzyPop.Core
 {
@@ -14,6 +15,9 @@ namespace PawzyPop.Core
         private Board board;
         private MatchFinder matchFinder;
         private bool isProcessing;
+
+        // 是否使用新的 Match3Game
+        private bool useMatch3Game = false;
 
         private void Awake()
         {
@@ -31,6 +35,10 @@ namespace PawzyPop.Core
         {
             board = Board.Instance;
             matchFinder = MatchFinder.Instance;
+
+            // 检测使用哪个游戏管理器
+            useMatch3Game = Match3Game.Instance != null;
+            Debug.Log($"[MatchProcessor] useMatch3Game: {useMatch3Game}");
 
             if (InputManager.Instance != null)
             {
@@ -68,7 +76,7 @@ namespace PawzyPop.Core
         private IEnumerator ProcessSwap(Tile tileA, Tile tileB)
         {
             isProcessing = true;
-            GameManager.Instance.SetState(GameState.Processing);
+            SetProcessingState();
 
             // 执行交换动画
             yield return StartCoroutine(AnimateSwap(tileA, tileB));
@@ -93,7 +101,7 @@ namespace PawzyPop.Core
                 Debug.Log($"[Match] Total matches: {allMatches.Count}, processing...");
                 
                 // 有匹配，消耗步数
-                GameManager.Instance.UseMove();
+                UseMove();
 
                 // 处理消除和连锁
                 yield return StartCoroutine(ProcessMatches(new List<Tile>(allMatches)));
@@ -113,12 +121,61 @@ namespace PawzyPop.Core
             }
 
             isProcessing = false;
-            
-            if (GameManager.Instance.CurrentState == GameState.Processing)
+            SetWaitingState();
+        }
+
+        #region State Management (兼容新旧系统)
+
+        private void SetProcessingState()
+        {
+            if (useMatch3Game && Match3Game.Instance != null)
+            {
+                // Match3Game 保持 Playing 状态，通过 isProcessing 控制
+            }
+            else if (GameManager.Instance != null)
+            {
+                GameManager.Instance.SetState(GameState.Processing);
+            }
+        }
+
+        private void SetWaitingState()
+        {
+            if (useMatch3Game && Match3Game.Instance != null)
+            {
+                // Match3Game 保持 Playing 状态
+            }
+            else if (GameManager.Instance != null && 
+                     GameManager.Instance.CurrentState == GameState.Processing)
             {
                 GameManager.Instance.SetState(GameState.WaitingInput);
             }
         }
+
+        private void UseMove()
+        {
+            if (useMatch3Game && Match3Game.Instance != null)
+            {
+                Match3Game.Instance.UseMove();
+            }
+            else if (GameManager.Instance != null)
+            {
+                GameManager.Instance.UseMove();
+            }
+        }
+
+        private void AddScore(int score)
+        {
+            if (useMatch3Game && Match3Game.Instance != null)
+            {
+                Match3Game.Instance.AddScore(score);
+            }
+            else if (GameManager.Instance != null)
+            {
+                GameManager.Instance.AddScore(score);
+            }
+        }
+
+        #endregion
 
         private IEnumerator AnimateSwap(Tile tileA, Tile tileB)
         {
@@ -162,7 +219,7 @@ namespace PawzyPop.Core
                 }
                 tile.SetEmpty(true);
             }
-            GameManager.Instance.AddScore(score);
+            AddScore(score);
 
             yield return new WaitForSeconds(matchDelay);
 

@@ -3,7 +3,7 @@
 ## [1.2.0] - 2025-12-10
 
 ### 新增
-- **小游戏集合平台基础架构**：实现 Phase 1-3 的核心功能
+- **小游戏集合平台基础架构**：实现 Phase 1-4 的核心功能
   
 #### Phase 1: 项目结构
 - 创建游戏模块目录结构：`Assets/Scripts/Games/Common/`, `Match3/`, `Gomoku/`
@@ -27,10 +27,16 @@
 - `BackToMenuButton.cs` - 返回主菜单按钮组件
 - `GameConfigCreator.cs` - Unity 编辑器工具，用于创建游戏配置
 
+#### Phase 4: 消消乐游戏重构 (US2)
+- `Match3Game.cs` - 消消乐游戏控制器，实现 IGame 接口
+- `GameUI.cs` - 更新支持新旧两套游戏管理器，新增返回主菜单按钮
+- `MatchProcessor.cs` - 更新支持 Match3Game，兼容旧 GameManager
+
 ### 技术说明
 - 使用 ScriptableObject 管理游戏配置
 - 支持异步场景加载，最小加载时间 0.5s
 - 多游戏高分独立保存，支持游玩次数和胜利次数统计
+- 保持向后兼容：GameUI 和 MatchProcessor 同时支持新旧系统
 
 ---
 
