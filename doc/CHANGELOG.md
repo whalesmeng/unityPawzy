@@ -1,5 +1,39 @@
 # Changelog
 
+## [1.2.0] - 2025-12-10
+
+### 新增
+- **小游戏集合平台基础架构**：实现 Phase 1-3 的核心功能
+  
+#### Phase 1: 项目结构
+- 创建游戏模块目录结构：`Assets/Scripts/Games/Common/`, `Match3/`, `Gomoku/`
+- 创建主菜单UI目录：`Assets/Scripts/UI/MainMenu/`
+- 创建预制体目录：`Assets/Prefabs/Games/`, `Assets/Prefabs/UI/`
+- 创建配置资源目录：`Assets/Resources/GameConfigs/`
+
+#### Phase 2: 基础架构
+- `IGame.cs` - 游戏通用接口，定义游戏生命周期方法
+- `GameBase.cs` - 游戏基类，提供 IGame 接口的默认实现
+- `GameInfo.cs` - 游戏信息 ScriptableObject，用于配置游戏元数据
+- `GameState.cs` - 游戏状态枚举（NotStarted, Playing, Paused, GameOver）
+- `GameResult.cs` - 游戏结果枚举（None, Win, Lose, Draw）
+- `SceneLoader.cs` - 场景加载管理器，支持同步/异步加载
+- `GameConfigManager.cs` - 游戏配置管理器，从 Resources 加载配置
+- `SaveManager.cs` 扩展 - 新增多游戏高分保存、设置保存功能
+
+#### Phase 3: 主菜单导航 (US1)
+- `MainMenuUI.cs` - 主菜单UI控制器
+- `GameCard.cs` - 游戏卡片组件，显示游戏入口
+- `BackToMenuButton.cs` - 返回主菜单按钮组件
+- `GameConfigCreator.cs` - Unity 编辑器工具，用于创建游戏配置
+
+### 技术说明
+- 使用 ScriptableObject 管理游戏配置
+- 支持异步场景加载，最小加载时间 0.5s
+- 多游戏高分独立保存，支持游玩次数和胜利次数统计
+
+---
+
 ## [1.1.1] - 2025-12-10
 
 ### 变更

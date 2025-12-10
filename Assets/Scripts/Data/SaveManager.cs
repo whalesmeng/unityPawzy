@@ -1,11 +1,43 @@
 using UnityEngine;
 using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace PawzyPop.Data
 {
+    /// <summary>
+    /// 游戏高分记录
+    /// </summary>
+    [Serializable]
+    public class GameHighScore
+    {
+        public string gameId;
+        public int highScore;
+        public int playCount;
+        public int winCount;
+        public string lastPlayTime;
+
+        public GameHighScore(string id)
+        {
+            gameId = id;
+            highScore = 0;
+            playCount = 0;
+            winCount = 0;
+            lastPlayTime = "";
+        }
+    }
+
+    /// <summary>
+    /// 游戏高分字典（用于序列化）
+    /// </summary>
+    [Serializable]
+    public class GameHighScoreList
+    {
+        public List<GameHighScore> scores = new List<GameHighScore>();
+    }
+
     [Serializable]
     public class PlayerSaveData
     {
@@ -22,11 +54,21 @@ namespace PawzyPop.Data
         public int totalMatchCount = 0;
         public int totalLevelCompleted = 0;
 
+        // 新增：多游戏高分支持
+        public GameHighScoreList gameScores = new GameHighScoreList();
+
+        // 新增：设置
+        public bool soundEnabled = true;
+        public bool musicEnabled = true;
+        public string lastPlayedGameId = "";
+        public string firstLaunchDate = "";
+
         public PlayerSaveData()
         {
             levelStars = new int[100];
             levelHighScores = new int[100];
             lastPlayDate = DateTime.Now.ToString("yyyy-MM-dd");
+            firstLaunchDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         }
     }
 
@@ -325,6 +367,133 @@ namespace PawzyPop.Data
         public int GetConsecutiveLoginDays()
         {
             return Data.consecutiveLoginDays;
+        }
+
+        #endregion
+
+        #region Multi-Game High Scores
+
+        /// <summary>
+        /// 获取或创建游戏高分记录
+        /// </summary>
+        private GameHighScore GetOrCreateGameScore(string gameId)
+        {
+            if (Data.gameScores == null)
+            {
+                Data.gameScores = new GameHighScoreList();
+            }
+
+            var score = Data.gameScores.scores.Find(s => s.gameId == gameId);
+            if (score == null)
+            {
+                score = new GameHighScore(gameId);
+                Data.gameScores.scores.Add(score);
+            }
+            return score;
+        }
+
+        /// <summary>
+        /// 更新游戏高分
+        /// </summary>
+        public bool UpdateGameHighScore(string gameId, int score)
+        {
+            var gameScore = GetOrCreateGameScore(gameId);
+            gameScore.playCount++;
+            gameScore.lastPlayTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+            bool isNewHighScore = score > gameScore.highScore;
+            if (isNewHighScore)
+            {
+                gameScore.highScore = score;
+                Debug.Log($"[Save] 新高分! {gameId}: {score}");
+            }
+
+            Data.lastPlayedGameId = gameId;
+            SaveData();
+            return isNewHighScore;
+        }
+
+        /// <summary>
+        /// 记录游戏胜利
+        /// </summary>
+        public void RecordGameWin(string gameId, int score)
+        {
+            var gameScore = GetOrCreateGameScore(gameId);
+            gameScore.winCount++;
+            UpdateGameHighScore(gameId, score);
+        }
+
+        /// <summary>
+        /// 获取游戏高分
+        /// </summary>
+        public int GetGameHighScore(string gameId)
+        {
+            var score = Data.gameScores?.scores.Find(s => s.gameId == gameId);
+            return score?.highScore ?? 0;
+        }
+
+        /// <summary>
+        /// 获取游戏游玩次数
+        /// </summary>
+        public int GetGamePlayCount(string gameId)
+        {
+            var score = Data.gameScores?.scores.Find(s => s.gameId == gameId);
+            return score?.playCount ?? 0;
+        }
+
+        /// <summary>
+        /// 获取游戏胜利次数
+        /// </summary>
+        public int GetGameWinCount(string gameId)
+        {
+            var score = Data.gameScores?.scores.Find(s => s.gameId == gameId);
+            return score?.winCount ?? 0;
+        }
+
+        /// <summary>
+        /// 获取上次玩的游戏ID
+        /// </summary>
+        public string GetLastPlayedGameId()
+        {
+            return Data.lastPlayedGameId;
+        }
+
+        #endregion
+
+        #region Settings
+
+        /// <summary>
+        /// 设置音效开关
+        /// </summary>
+        public void SetSoundEnabled(bool enabled)
+        {
+            Data.soundEnabled = enabled;
+            SaveData();
+        }
+
+        /// <summary>
+        /// 获取音效开关状态
+        /// </summary>
+        public bool IsSoundEnabled()
+        {
+            return Data.soundEnabled;
+        }
+
+        /// <summary>
+        /// 设置音乐开关
+        /// </summary>
+        public void SetMusicEnabled(bool enabled)
+        {
+            Data.musicEnabled = enabled;
+            SaveData();
+        }
+
+        /// <summary>
+        /// 获取音乐开关状态
+        /// </summary>
+        public bool IsMusicEnabled()
+        {
+            return Data.musicEnabled;
         }
 
         #endregion
