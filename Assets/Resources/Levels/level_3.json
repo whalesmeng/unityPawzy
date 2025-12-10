@@ -1,0 +1,9 @@
+{
+  "levelId": 3,
+  "boardSize": [6, 6],
+  "moves": 20,
+  "targetType": "score",
+  "targetValue": 1200,
+  "elements": ["shiba", "corgi", "golden", "husky", "teddy"],
+  "starThresholds": [1200, 1800, 2400]
+}
