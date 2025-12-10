@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.0.2] - 2025-12-10
+
+### 新增
+- **项目 Constitution**：初始化 speckit，建立项目规范
+  - `.specify/memory/constitution.md` - 项目宪法，定义核心原则
+  - CHANGELOG-First Commits 原则：每次提交前必须更新 CHANGELOG
+  - Commit Message 规范：使用 `<type>: <subject>` 格式
+  - Unity 项目结构规范
+  - 代码质量和跨平台兼容规范
+
+### 变更
+- `.codebuddy/rules/git-commit-rules.mdc` - Git 提交规则
+
+---
+
 ## [1.0.1] - 2025-12-10
 
 ### 修复
